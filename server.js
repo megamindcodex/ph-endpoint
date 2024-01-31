@@ -40,9 +40,14 @@ const PORT = process.env.PORT || 5000;
 
 // middleware to parse json in the request body
 app.use(bodyParser.json());
+app.options("*", cors()); // Enable preflight requests for all routes
 
 // Enable CORS for for all routes
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://65b536ce52f5380008c3cc41--marktio.netlify.app",
+  })
+);
 
 // use routes files
 app.use("/api", signUpRoute);
@@ -66,8 +71,9 @@ const dbURI = process.env.MONGO_URI;
 
 const connectDB = async () => {
   try {
-    const conn = mongoose.connect(dbURI).then(() => {
-      console.log(`MongoDB connected: ${conn.connection}`);
+    const conn = mongoose.connect(process.env.MONGO_URI).then(() => {
+      console.log(`MongoDB connected`);
+      // console.log(process.env.MONGO_URI);
     });
   } catch (err) {
     console.log("Failed to connect to mongodb", err, err.message);
@@ -139,7 +145,7 @@ app.get("/api/productsDeployed", async (req, res) => {
     const products = await Product.find({ deploy: true });
     if (products) {
       res.status(200).json(products);
-      // console.log("All Product found", products)
+      console.log("All Product found", products);
     }
   } catch (err) {
     console.log("Failed to get blog:", err.message);
@@ -147,17 +153,19 @@ app.get("/api/productsDeployed", async (req, res) => {
 });
 
 // Get specific product details where deploy property is true from the database....route
-app.get("/api/deployedProductDetail/:id", async (req, res) => {
+app.get("/api/deployedProductDetail/:productId", async (req, res) => {
   try {
-    const productId = req.params.id;
-    const product = await Product.findById(productId);
-    if (product.deploy === true) {
+    const productId = req.params.productId;
+    const product = await Product.findOne({ _id: productId });
+    const productDeployed = product.deploy;
+    if (productDeployed) {
       // console.log("Product found", product);
       res.status(200).json(product);
-    } else {
-      console.log("Product not found");
-      res.status(404).json({ message: "product not found" });
     }
+    // else {
+    //   console.log("Product not found");
+    //   res.status(409).json({ message: "product not found" });
+    // }
   } catch (err) {
     console.log("Error getting product:", err.message);
     res.status(500).json({ message: "Internal Server Error" });
