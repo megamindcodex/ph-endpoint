@@ -14,12 +14,12 @@ router.get("/getCartItems", async (req, res) => {
   try {
     const userId = req.query.userId;
     // const cartItemsData = req.query.cartItemsData
-    // console.log(cartItemsData);
+    console.log(userId);
 
     const user = await User.findById(userId);
 
     const cartItems = user.userCart.cartItems;
-    console.log(cartItems);
+    // console.log(cartItems);
     const products = await Promise.all(
       cartItems.map(async (cartItem) => {
         const product = await Product.findById(cartItem.productId);
