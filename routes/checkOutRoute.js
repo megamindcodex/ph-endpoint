@@ -15,16 +15,17 @@ const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 
 router.post("/create-checkout-session", async (req, res) => {
   try {
-    const userId = req.body.userId
-    const user = await User.findById(userId)
-    const cartItemsData = user.userCart.cartItems
-    const products = await Promise.all(cartItemsData.map(async (cartItem) => {
-      const product = await Product.findById(cartItem.productId);
-      return {
-        ...product.toObject(),
-        quantity: cartItem.quantity,
-      };
-    })
+    const userId = req.body.userId;
+    const user = await User.findById(userId);
+    const cartItemsData = user.userCart.cartItems;
+    const products = await Promise.all(
+      cartItemsData.map(async (cartItem) => {
+        const product = await Product.findById(cartItem.productId);
+        return {
+          ...product.toObject(),
+          quantity: cartItem.quantity,
+        };
+      })
     );
 
     // console.log(products)
@@ -44,8 +45,10 @@ router.post("/create-checkout-session", async (req, res) => {
         },
         quantity: product.quantity,
       })),
-      success_url: "http://localhost:5175/",
+      success_url: "https://marktio.netlify.app/payment-successfull",
       cancel_url: "http://localhost:5175/",
+      // success_url: "http://localhost:5173/payment-successfull",
+      // cancel_url: "http://localhost:5175/",
     });
 
     res.status(200).json({ url: session.url, session: session });
