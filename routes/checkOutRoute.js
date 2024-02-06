@@ -45,10 +45,10 @@ router.post("/create-checkout-session", async (req, res) => {
         },
         quantity: product.quantity,
       })),
-      success_url: "https://marktio.netlify.app/payment-successfull",
-      cancel_url: "http://localhost:5175/",
-      // success_url: "http://localhost:5173/payment-successfull",
+      // success_url: "https://marktio.netlify.app/payment-successfull",
       // cancel_url: "http://localhost:5175/",
+      success_url: "http://localhost:5173/payment-successfull",
+      cancel_url: "http://localhost:5175/",
     });
 
     res.status(200).json({ url: session.url, session: session });
