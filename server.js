@@ -34,6 +34,7 @@ const checkItemInCartRoute = require("./routes/checkItemInCartRoute");
 const addQuantityRoute = require("./routes/addQuantityRoute");
 const reduceQuantityRoute = require("./routes/reduceQuantityRoute");
 const getQuantityRoute = require("./routes/getQuantityRoute");
+const clearCartItemsRoute = require("./routes/clearCartItemsRoute");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -65,6 +66,7 @@ app.use("/api", checkItemInCartRoute);
 app.use("/api", addQuantityRoute);
 app.use("/api", reduceQuantityRoute);
 app.use("/api", getQuantityRoute);
+app.use("/api", clearCartItemsRoute);
 
 //connect to mongodb database
 const dbURI = process.env.MONGO_URI;
