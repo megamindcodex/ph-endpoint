@@ -61,7 +61,7 @@ router.post("/loginUser", async (req, res) => {
 
     // Send the response after checking for the user
     res.status(200).json({ _id: userId });
-    console.log("user logged in", user);
+    // console.log("user logged in", user);
   } catch (err) {
     console.error("Error finding user", err.message);
     res.status(500).json({ error: "Error finding user" });
@@ -70,4 +70,3 @@ router.post("/loginUser", async (req, res) => {
 
 // Export router
 module.exports = router;
-   

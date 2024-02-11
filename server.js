@@ -16,9 +16,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const Product = require("./model/product");
+
+require("dotenv").config();
 
 // import router files
+const addProductRoute = require("./routes/addProductRoute");
+const productsRoute = require("./routes/productsRoute");
+const productsByCategoryRoute = require("./routes/productsByCategoryRoute");
+const productDetailRoute = require("./routes/productDetailRoute");
+const deployProductRoute = require("./routes/deployProductRoute");
+const deployedProductDetailRoute = require("./routes/deployedProductDetailRoute");
+const productsDeployedRoute = require("./routes/productsDeployedRoute");
+const checkDeployRoute = require("./routes/checkDeployRoute");
+const deleteProductRoute = require("./routes/deleteProductRoute");
+const updateProductRoute = require("./routes/updateProductRoute");
 const signUpRoute = require("./routes/signupRoute");
 const loginRoute = require("./routes/loginRoute");
 const profileRoute = require("./routes/profileRoute");
@@ -36,6 +47,14 @@ const reduceQuantityRoute = require("./routes/reduceQuantityRoute");
 const getQuantityRoute = require("./routes/getQuantityRoute");
 const clearCartItemsRoute = require("./routes/clearCartItemsRoute");
 
+const addCategoryRoute = require("./routes/RouteCategories/addCategoryRoute");
+const categoriesRoute = require("./routes/RouteCategories/categoriesRoute");
+const categoryDetailRoute = require("./routes/RouteCategories/categoryDetailRoute");
+const deployCategoryRoute = require("./routes/RouteCategories/deployCategoryRoute");
+const checkCategoryDeployRoute = require("./routes/RouteCategories/checkCategoryDeployRoute");
+const updateCategoryRoute = require("./routes/RouteCategories/updateCategoryRoute");
+const deployedCategoriesRoute = require("./routes/RouteCategories/deployedCategoriesRoute");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -44,13 +63,18 @@ app.use(bodyParser.json());
 app.options("*", cors()); // Enable preflight requests for all routes
 
 // Enable CORS for for all routes
-app.use(
-  cors({
-    origin: "https://65b536ce52f5380008c3cc41--marktio.netlify.app",
-  })
-);
+app.use(cors());
 
 // use routes files
+app.use("/api", addProductRoute);
+app.use("/api", productsRoute);
+app.use("/api", productDetailRoute);
+app.use("/api", deployProductRoute);
+app.use("/api", deployedProductDetailRoute);
+app.use("/api", productsDeployedRoute);
+app.use("/api", checkDeployRoute);
+app.use("/api", deleteProductRoute);
+app.use("/api", updateProductRoute);
 app.use("/api", signUpRoute);
 app.use("/api", loginRoute);
 app.use("/api", profileRoute);
@@ -67,153 +91,29 @@ app.use("/api", addQuantityRoute);
 app.use("/api", reduceQuantityRoute);
 app.use("/api", getQuantityRoute);
 app.use("/api", clearCartItemsRoute);
+app.use("/api", addCategoryRoute);
+app.use("/api", categoriesRoute);
+app.use("/api", categoryDetailRoute);
+app.use("/api", deployCategoryRoute);
+app.use("/api", checkCategoryDeployRoute);
+app.use("/api", updateCategoryRoute);
+app.use("/api", deployedCategoriesRoute);
+app.use("/api", productsByCategoryRoute);
 
 //connect to mongodb database
-const dbURI = process.env.MONGO_URI;
+const dbURI = process.env.DB_URI;
 
 const connectDB = async () => {
   try {
-    const conn = mongoose.connect(process.env.MONGO_URI).then(() => {
+    const conn = mongoose.connect(dbURI).then(() => {
       console.log(`MongoDB connected`);
-      // console.log(process.env.MONGO_URI);
+      console.log(process.env.DB_URI);
     });
   } catch (err) {
     console.log("Failed to connect to mongodb", err, err.message);
     process.exit(1);
   }
 };
-
-// create a new product in the products collection....route
-app.post("/api/addproduct", async (req, res) => {
-  try {
-    const formData = req.body;
-    const product = await Product.create(formData);
-    // console.log("data to be sent", formData, product)
-    res.status(201).json({ message: "product successfully created" });
-    console.log("New product created successfully", product);
-  } catch (err) {
-    console.error("Error creating new product!", err.message);
-  }
-});
-
-// Get all products from the database....route
-app.get("/api/products", async (req, res) => {
-  try {
-    const products = await Product.find();
-    if (products) {
-      res.status(200).json(products);
-      // console.log("All Product found", products)
-    }
-  } catch (err) {
-    console.log("Failed to get blog:", err.message);
-  }
-});
-
-// Get specific product details from the database....route
-app.get("/api/productDetail/:id", async (req, res) => {
-  try {
-    const productId = req.params.id;
-    const product = await Product.findById(productId);
-    if (product) {
-      // console.log("Product found", product);
-      res.status(200).json(product);
-    } else {
-      console.log("Product not found");
-      res.status(404).json({ message: "product not found" });
-    }
-  } catch (err) {
-    console.log("Error getting product:", err.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-// set deploy property in product collection to true or false
-app.put("/api/deployProduct/:id", async (req, res) => {
-  try {
-    const productId = req.params.id;
-    const product = await Product.findById(productId);
-    const result = await Product.findByIdAndUpdate(productId, {
-      deploy: !product.deploy,
-    });
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to set product deployment property", err.message);
-  }
-});
-
-// Get all Products that deploy property is equal to "ture" from the database....route
-app.get("/api/productsDeployed", async (req, res) => {
-  try {
-    const products = await Product.find({ deploy: true });
-    if (products) {
-      res.status(200).json(products);
-      // console.log("All Product found", products);
-    }
-  } catch (err) {
-    console.log("Failed to get all products:", err.message);
-  }
-});
-
-// Get specific product details where deploy property is true from the database....route
-app.get("/api/deployedProductDetail/:productId", async (req, res) => {
-  try {
-    const productId = req.params.productId;
-    const product = await Product.findOne({ _id: productId });
-    const productDeployed = product.deploy;
-    if (productDeployed) {
-      // console.log("Product found", product);
-      res.status(200).json(product);
-    }
-    // else {
-    //   console.log("Product not found");
-    //   res.status(409).json({ message: "product not found" });
-    // }
-  } catch (err) {
-    console.log("Error getting product:", err.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-// check if the product is alredy deployed or not
-app.get("/api/checkDeploy/:id", async (req, res) => {
-  try {
-    const productId = req.params.id;
-    const product = await Product.findById(productId);
-    res.status(200).json(product.deploy);
-  } catch (err) {
-    console.error("Failed to check product deploy value", err.message);
-  }
-});
-
-// Delete product from the database by Id....route
-app.post("/api/deleteProduct/:id", async (req, res) => {
-  try {
-    const productId = req.params.id;
-    const result = await Product.findByIdAndDelete(productId);
-    res.status(200).json(result);
-  } catch (err) {
-    console.error("Failed to delete product", err.message);
-  }
-});
-
-// Update product from the database by Id....route
-app.put("/api/updateProduct/:id", async (req, res) => {
-  try {
-    const productId = req.params.id;
-    const productToUpdate = req.body;
-    const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
-      productToUpdate,
-      { new: true }
-    );
-
-    res.status(200).json(updatedProduct);
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: "Failed to update product", message: err.message });
-  }
-});
 
 connectDB().then(() => {
   app.listen(PORT, () => {
