@@ -20,6 +20,8 @@ const cors = require("cors");
 require("dotenv").config();
 
 // import router files
+
+const updateUserRoute = require("./routes/userRoute/updateUserRoute");
 const addProductRoute = require("./routes/addProductRoute");
 const productsRoute = require("./routes/productsRoute");
 const productsByCategoryRoute = require("./routes/productsByCategoryRoute");
@@ -99,6 +101,7 @@ app.use("/api", checkCategoryDeployRoute);
 app.use("/api", updateCategoryRoute);
 app.use("/api", deployedCategoriesRoute);
 app.use("/api", productsByCategoryRoute);
+app.use("/api", updateUserRoute);
 
 //connect to mongodb database
 const dbURI = process.env.DB_URI;

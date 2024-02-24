@@ -15,19 +15,26 @@ router.get("/checkItemInCart", async (req, res) => {
   const userId = req.query.userId;
   const productId = req.query.productId;
 
-  const user = await User.findById(userId);
+  try {
+    const user = await User.findById(userId);
 
-  if (!user) {
-    res.status(404).json({ message: "User not found" });
-    return false;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const cartItems = user.userCart.cartItems;
+
+    const isItemInCart = cartItems.some((item) =>
+      item.productId.equals(productId)
+    );
+
+    console.log(isItemInCart);
+
+    res.status(200).json(isItemInCart);
+  } catch (error) {
+    console.error("Error checking item in cart:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  const cartItems = user.userCart.cartItems;
-  const isItemInCart = cartItems.some((item) =>
-    item.productId.equals(productId)
-  );
-  // console.log(isItemInCart)
-
-  res.status(200).json({ isItemInCart });
 });
+
 module.exports = router;

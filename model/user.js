@@ -26,6 +26,44 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  addressBook: {
+    firstName: {
+      type: String,
+      default: null,
+    },
+    LastName: {
+      type: String,
+      default: null,
+    },
+    prefix: {
+      type: String,
+      default: null,
+    },
+    phoneNumber: {
+      type: String,
+      default: null,
+    },
+    country: {
+      type: String,
+      default: null,
+    },
+    state: {
+      type: String,
+      default: null,
+    },
+    city: {
+      type: String,
+      default: null,
+    },
+    deliveryAddress: {
+      type: String,
+      default: null,
+    },
+    additionalInfo: {
+      type: String,
+      default: null,
+    },
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
@@ -33,11 +71,11 @@ const userSchema = new mongoose.Schema({
   userCart: {
     cartItems: [
       {
-          productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-          quantity: {
-            type: Number,
-            default: 1,
-          },
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        quantity: {
+          type: Number,
+          default: 1,
+        },
       },
     ],
     subtotal: {

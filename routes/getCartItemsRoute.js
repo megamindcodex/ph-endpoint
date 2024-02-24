@@ -15,7 +15,7 @@ router.get("/getCartItems", async (req, res) => {
   try {
     const userId = req.query.userId;
     // const cartItemsData = req.query.cartItemsData
-    console.log(userId);
+    // console.log(userId);
 
     // Validate userId to ensure it's a valid MongoDB ObjectId
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
