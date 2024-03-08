@@ -51,7 +51,7 @@ router.post("/create-checkout-session", async (req, res) => {
       // cancel_url: "http://localhost:5175/",
     });
 
-    res.status(200).json({ url: session.url, session: session });
+    res.status(200).json({ url: session.url });
     // console.log(session);
   } catch (err) {
     res.status(500).json({ error: "Error creating checkout session:", err });

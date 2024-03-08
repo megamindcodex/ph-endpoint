@@ -32,6 +32,8 @@ router.get("/getCartItems", async (req, res) => {
     const products = await Promise.all(
       cartItems.map(async (cartItem) => {
         const product = await Product.findById(cartItem.productId);
+        const subTotal = cartItem.quantity * product.price;
+        // console.log(subTotal);
 
         if (!product) {
           // Handle the case where a product is not found
@@ -41,11 +43,12 @@ router.get("/getCartItems", async (req, res) => {
         return {
           ...product.toObject(),
           quantity: cartItem.quantity,
+          subTotal: subTotal,
         };
       })
     );
 
-    // console.log(products.length);
+    // console.log(products);
     res.status(200).json(products);
   } catch (err) {
     console.error("Error getting CartItems ", err.message);
