@@ -57,6 +57,7 @@ const deployCategoryRoute = require("./routes/RouteCategories/deployCategoryRout
 const checkCategoryDeployRoute = require("./routes/RouteCategories/checkCategoryDeployRoute");
 const updateCategoryRoute = require("./routes/RouteCategories/updateCategoryRoute");
 const deployedCategoriesRoute = require("./routes/RouteCategories/deployedCategoriesRoute");
+const deleteCategoryRoute = require("./routes/RouteCategories/deleteCategoryRoute");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -103,6 +104,7 @@ app.use("/api", checkCategoryDeployRoute);
 app.use("/api", updateCategoryRoute);
 app.use("/api", deployedCategoriesRoute);
 app.use("/api", productsByCategoryRoute);
+app.use("/api", deleteCategoryRoute);
 app.use("/api", updateUserRoute);
 
 //connect to mongodb database
@@ -110,7 +112,7 @@ const dbURI = process.env.DB_URI;
 
 const connectDB = async () => {
   try {
-    const conn = mongoose.connect(dbURI).then(() => {
+    const conn = await mongoose.connect(dbURI).then(() => {
       console.log(`MongoDB connected`);
       console.log(process.env.DB_URI);
     });
